@@ -81,9 +81,12 @@ Item: [Logs]
 Delay: 3 ticks
 Conditions:
   ├─ Bank Closed
-  └─ Has Item: [Logs]
+  ├─ Has Item: [Logs]
+  └─ Idle (Grace: 2t)
 ```
 *Repeated 27 times for each log in inventory*
+
+**Note:** The `Idle (Grace: 2t)` condition prevents casting too quickly by waiting for the previous spell's animation to complete.
 
 ---
 
@@ -141,9 +144,12 @@ Item: [Alch Item]
 Delay: 5 ticks
 Conditions:
   ├─ Bank Closed
-  └─ Has Item: [Alch Item]
+  ├─ Has Item: [Alch Item]
+  └─ Idle (Grace: 2t)
 ```
 *Repeated 27 times for each item*
+
+**Note:** The `Idle (Grace: 2t)` condition prevents casting too quickly by waiting for the previous spell's animation to complete.
 
 ---
 
@@ -189,3 +195,7 @@ Common profitable items:
 3. **Fire staff** - Eliminates fire rune cost
 4. **Buy limits** - Can only buy 70 of most items per 4 hours
 5. **Alch value lookup** - Use wiki or GE to find profitable items
+
+### Animation Grace Period
+- **Animation Issues?** - If the script casts spells too quickly or skips casts, add an `Idle (Grace: 2t)` condition to spell casting tasks
+- **Increase if needed** - Try 3 ticks if spells are still being skipped

@@ -98,16 +98,21 @@ Conditions:
   ├─ Bank Closed
   ├─ Has Item: [Logs]
   ├─ NOT Menu Open
-  └─ Idle
+  └─ Idle (Grace: 2t)
 ```
+
+**Note:** The `Idle (Grace: 2t)` condition waits up to 2 ticks to confirm the player is truly idle before triggering.
 
 ---
 
 ### Task 7: Wait for Animation
 ```
 Type: Wait Animation
+Grace Period: 2 ticks
 Max Ticks: 35
 ```
+
+**Grace Period:** Waits up to 2 ticks for animation to start before checking. Increase to 3 ticks if the script skips this step.
 
 ---
 
@@ -153,3 +158,4 @@ Conditions:
 2. **Longbows > Shortbows** - Longbows give more XP
 3. **String bows for more XP** - Combine with Bow Stringing script
 4. **Arrow shafts** - Good for ironmen or low levels
+5. **Animation Issues?** - If the script skips tasks after clicking, increase the Grace Period on the `Idle` condition or `Wait Animation` task (try 3 ticks)

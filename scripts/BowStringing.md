@@ -98,16 +98,21 @@ Conditions:
   ├─ Has Item: [Unstrung Bow]
   ├─ Has Item: "Bow string"
   ├─ NOT Menu Open
-  └─ Idle
+  └─ Idle (Grace: 2t)
 ```
+
+**Note:** The `Idle (Grace: 2t)` condition waits up to 2 ticks to confirm the player is truly idle before triggering.
 
 ---
 
 ### Task 7: Wait for Animation
 ```
 Type: Wait Animation
+Grace Period: 2 ticks
 Max Ticks: 25
 ```
+
+**Grace Period:** Waits up to 2 ticks for animation to start before checking. Increase to 3 ticks if the script skips this step.
 
 ---
 
@@ -150,3 +155,4 @@ Stringing bows is often profitable:
 2. **Combine with High Alch** - String bows then alch for profit
 3. **14+14 inventory** - Equal amounts of bows and strings
 4. **No tool needed** - Just bows and strings
+5. **Animation Issues?** - If the script skips tasks after clicking, increase the Grace Period on the `Idle` condition or `Wait Animation` task (try 3 ticks)

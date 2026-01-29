@@ -114,16 +114,21 @@ Conditions:
   ├─ Bank Closed
   ├─ Has Item: "Molten glass"
   ├─ NOT Menu Open
-  └─ Idle
+  └─ Idle (Grace: 2t)
 ```
+
+**Note:** The `Idle (Grace: 2t)` condition waits up to 2 ticks to confirm the player is truly idle before triggering.
 
 ---
 
 ### Task 7: Wait for Animation
 ```
 Type: Wait Animation
+Grace Period: 2 ticks
 Max Ticks: 40
 ```
+
+**Grace Period:** Waits up to 2 ticks for animation to start before checking. Increase to 3 ticks if the script skips this step.
 
 ---
 
@@ -188,3 +193,4 @@ This is the meta for Crafting + Magic XP!
 3. **Make your own glass** - Much better profit than buying
 4. **Crafting Guild** - Close bank + pottery wheel for making items
 5. **Light orbs** - Best XP at 87 Crafting, also profitable
+6. **Animation Issues?** - If the script skips tasks after clicking, increase the Grace Period on the `Idle` condition or `Wait Animation` task (try 3 ticks)

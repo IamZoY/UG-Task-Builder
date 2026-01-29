@@ -100,16 +100,21 @@ Conditions:
   ├─ Has Item: "Battlestaff"
   ├─ Has Item: [Orb]
   ├─ NOT Menu Open
-  └─ Idle
+  └─ Idle (Grace: 2t)
 ```
+
+**Note:** The `Idle (Grace: 2t)` condition waits up to 2 ticks to confirm the player is truly idle before triggering.
 
 ---
 
 ### Task 7: Wait for Animation
 ```
 Type: Wait Animation
+Grace Period: 2 ticks
 Max Ticks: 25
 ```
+
+**Grace Period:** Waits up to 2 ticks for animation to start before checking. Increase to 3 ticks if the script skips this step.
 
 ---
 
@@ -167,3 +172,4 @@ Buying daily staves and attaching orbs is consistent profit!
 3. **Air = best XP** - But also most expensive orbs
 4. **Water = budget option** - Lower XP but cheaper
 5. **Alch the staves** - For even more profit (and magic XP)
+6. **Animation Issues?** - If the script skips tasks after clicking, increase the Grace Period on the `Idle` condition or `Wait Animation` task (try 3 ticks)

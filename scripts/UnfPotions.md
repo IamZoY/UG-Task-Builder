@@ -99,16 +99,21 @@ Conditions:
   ├─ Has Item: [Herb]
   ├─ Has Item: "Vial of water"
   ├─ NOT Menu Open
-  └─ Idle
+  └─ Idle (Grace: 2t)
 ```
+
+**Note:** The `Idle (Grace: 2t)` condition waits up to 2 ticks to confirm the player is truly idle before triggering.
 
 ---
 
 ### Task 7: Wait for Animation
 ```
 Type: Wait Animation
+Grace Period: 2 ticks
 Max Ticks: 18
 ```
+
+**Grace Period:** Waits up to 2 ticks for animation to start before checking. Increase to 3 ticks if the script skips this step.
 
 ---
 
@@ -143,3 +148,4 @@ Making unfinished potions can be profitable:
 1. **Buy in bulk** - Herbs and vials are cheap
 2. **No XP waste** - Making unf potions gives no XP, but is profitable
 3. **Great for alts** - Low requirements, easy money
+4. **Animation Issues?** - If the script skips tasks after clicking, increase the Grace Period on the `Idle` condition or `Wait Animation` task (try 3 ticks)

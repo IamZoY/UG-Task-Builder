@@ -99,16 +99,21 @@ Conditions:
   ├─ Bank Closed
   ├─ Has Item: [Uncut Gem]
   ├─ NOT Menu Open
-  └─ Idle
+  └─ Idle (Grace: 2t)
 ```
+
+**Note:** The `Idle (Grace: 2t)` condition waits up to 2 ticks to confirm the player is truly idle before triggering. This prevents the task from firing while an animation is still starting.
 
 ---
 
 ### Task 7: Wait for Animation
 ```
 Type: Wait Animation
+Grace Period: 2 ticks
 Max Ticks: 35
 ```
+
+**Grace Period:** Waits up to 2 ticks for animation to start before checking. Increase to 3 ticks if the script skips this step.
 
 ---
 
@@ -155,3 +160,4 @@ Gem cutting is usually profitable:
 2. **Profitable** - Usually makes money while training
 3. **AFK-friendly** - Long action time per inventory
 4. **Crushed gems** - Low level gems can be crushed (failed cut), higher level = less fails
+5. **Animation Issues?** - If the script skips tasks after clicking, increase the Grace Period on the `Idle` condition or `Wait Animation` task (try 3 ticks)

@@ -116,16 +116,21 @@ Conditions:
   ├─ Bank Closed
   ├─ Has Item: [Leather]
   ├─ NOT Menu Open
-  └─ Idle
+  └─ Idle (Grace: 2t)
 ```
+
+**Note:** The `Idle (Grace: 2t)` condition waits up to 2 ticks to confirm the player is truly idle before triggering.
 
 ---
 
 ### Task 8: Wait for Animation
 ```
 Type: Wait Animation
+Grace Period: 2 ticks
 Max Ticks: 35
 ```
+
+**Grace Period:** Waits up to 2 ticks for animation to start before checking. Increase to 3 ticks if the script skips this step.
 
 ---
 
@@ -170,3 +175,4 @@ D'hide bodies often sell for LESS than the leather cost:
 2. **Needle doesn't break** - You only need 1 needle
 3. **3 leather per body** - 26 leather = 8 bodies with 2 leftover
 4. **Crafting Guild** - Best bank location for crafting
+5. **Animation Issues?** - If the script skips tasks after clicking, increase the Grace Period on the `Idle` condition or `Wait Animation` task (try 3 ticks)

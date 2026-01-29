@@ -140,9 +140,11 @@ UG Task Builder allows you to create automated scripts by combining **tasks** in
 | Type | Description | Required Fields |
 |------|-------------|-----------------|
 | `Wait Ticks` | Pauses for X game ticks (1 tick = 600ms) | Quantity (ticks) |
-| `Wait Animation` | Waits while player is animating | Max ticks (optional) |
-| `Wait Idle` | Waits until player stops animating | None |
+| `Wait Animation` | Waits while player is animating | Grace Period (optional) |
+| `Wait Idle` | Waits until player stops animating | Grace Period (optional) |
 | `Walk To` | Walks to coordinates and waits until arrived | X, Y, Z coordinates |
+
+**Grace Period:** How long to wait for animation to start after an action. Prevents false "not animating" detection. Default: 2 ticks.
 
 ---
 
@@ -166,18 +168,20 @@ Conditions control **when** a task executes. A task with conditions will only ru
 
 ### Available Condition Types
 
-| Condition | Description | Needs Item? | Needs Qty? |
-|-----------|-------------|-------------|------------|
-| `Has Item` | Inventory contains item | ✅ | ❌ |
-| `No Item` | Inventory does NOT contain item | ✅ | ❌ |
-| `Bank Open` | Bank interface is open | ❌ | ❌ |
-| `Bank Closed` | Bank interface is closed | ❌ | ❌ |
-| `Animating` | Player is animating | ❌ | ❌ |
-| `Idle` | Player is NOT animating | ❌ | ❌ |
-| `Inv Full` | Inventory has 28 items | ❌ | ❌ |
-| `Inv Empty` | Inventory has 0 items | ❌ | ❌ |
-| `Inv Count` | Has X or more of item | ✅ | ✅ |
-| `Menu Open` | Skill menu is visible | ❌ | ❌ |
+| Condition | Description | Needs Item? | Needs Qty? | Grace? |
+|-----------|-------------|-------------|------------|--------|
+| `Has Item` | Inventory contains item | ✅ | ❌ | ❌ |
+| `No Item` | Inventory does NOT contain item | ✅ | ❌ | ❌ |
+| `Bank Open` | Bank interface is open | ❌ | ❌ | ❌ |
+| `Bank Closed` | Bank interface is closed | ❌ | ❌ | ❌ |
+| `Animating` | Player is animating | ❌ | ❌ | ✅ |
+| `Idle` | Player is NOT animating | ❌ | ❌ | ✅ |
+| `Inv Full` | Inventory has 28 items | ❌ | ❌ | ❌ |
+| `Inv Empty` | Inventory has 0 items | ❌ | ❌ | ❌ |
+| `Inv Count` | Has X or more of item | ✅ | ✅ | ❌ |
+| `Menu Open` | Skill menu is visible | ❌ | ❌ | ❌ |
+
+**Grace Period (Grace?):** For `Animating` and `Idle` conditions, you can set a grace period. This is how long the bot waits for an animation to start before deciding you're "not animating". See [Animation Grace Period](#animation-grace-period) for details.
 
 ### The NOT Modifier
 
@@ -425,6 +429,72 @@ Example: Delay 2, Ticks ✅, Randomize 20%
 - Base: 1200ms (2 ticks)
 - Range: 960ms - 1440ms
 
+### Animation Grace Period
+
+The **Grace Period** setting solves a common timing issue: when you click an item or object, there's a brief delay before the player's animation actually starts. Without a grace period, the bot might incorrectly think "player is not animating" and skip to the next task.
+
+#### How It Works
+
+When checking if a player is animating:
+1. First checks if currently animating → returns immediately if yes
+2. If not animating, waits for the **grace period** to see if animation starts
+3. Only returns "not animating" after the grace period expires without animation
+
+#### Configuration
+
+The grace period appears in the task editor for:
+- **Wait Animation** task
+- **Wait Idle** task
+- **Animating** condition (inline)
+- **Idle** condition (inline)
+
+| Setting | Description |
+|---------|-------------|
+| **Grace Period** | How long to wait for animation to start (default: 2 ticks) |
+| **Ticks checkbox** | If checked, value is in game ticks (600ms each). If unchecked, value is in milliseconds |
+
+#### Recommended Grace Period Values
+
+| Activity | Recommended Grace Period |
+|----------|-------------------------|
+| Gem Cutting | 2-3 ticks |
+| Potion Making | 2 ticks |
+| Glass Blowing | 2-3 ticks |
+| Fletching | 2 ticks |
+| Smithing | 3 ticks |
+| Slow/laggy actions | 3-4 ticks |
+
+#### When to Increase Grace Period
+
+Increase the grace period if:
+- The bot skips actions because it thinks you're "not animating"
+- You're doing activities with slower animation starts
+- You're experiencing lag or high latency
+- Tasks with `Idle` condition keep triggering too early
+
+#### Example Task Configuration
+
+```
+Task: Use Chisel on Gem
+├─ Type: Use Item on Item
+├─ Item 1: "Chisel"
+├─ Item 2: "Uncut ruby"
+├─ Delay: 1 tick
+└─ Conditions:
+    ├─ Bank Closed
+    ├─ Has Item: "Uncut ruby"
+    ├─ NOT Menu Open
+    └─ Idle (Grace: 2t)  ← Grace period on Idle condition
+```
+
+```
+Task: Wait Animation
+├─ Type: Wait Animation
+├─ Grace Period: 2
+├─ Ticks: ✓ (checked)
+└─ Max Ticks: 35
+```
+
 ### Combining Multiple Scripts
 
 You can have multiple scripts enabled at once. They execute in order from top to bottom.
@@ -487,6 +557,23 @@ Once a script works, **Export** it as a backup!
 | Menu Select | 1 tick |
 | Wait Animation | 20-40 ticks (depends on activity) |
 
+### 8. Use Grace Period for Animation Detection
+
+If your bot skips tasks because it thinks you're "not animating" right after clicking:
+
+✅ **Solution:** Increase the grace period on the `Animating` or `Idle` condition
+
+```
+Task: Use Item on Item
+Conditions:
+  - Bank Closed
+  - Has Item: "Uncut ruby"
+  - NOT Menu Open
+  - Idle (Grace: 3t)  ← Increased to 3 ticks
+```
+
+The grace period gives the game time to start the animation before the bot checks. Default is 2 ticks, but try 3-4 for slow animations or laggy connections.
+
 ---
 
 ## Troubleshooting
@@ -514,6 +601,24 @@ Once a script works, **Export** it as a backup!
 - Verify `Menu Open` condition is set
 - Check the option number is correct (1, 2, 3...)
 - Add wait animation before menu task
+
+### Bot Skips Tasks After Clicking (False "Not Animating")
+
+This happens when the bot checks animation state before the animation actually starts.
+
+**Symptoms:**
+- Bot clicks item, then immediately does something else
+- `Idle` condition returns true right after an action
+- Script seems to "skip" the making/crafting step
+
+**Solutions:**
+1. **Increase Grace Period** on the `Idle` condition (try 3 ticks instead of 2)
+2. **Add Grace Period** to `Wait Animation` task
+3. **Check for lag** - higher latency needs longer grace periods
+
+```
+Fix: Change Idle condition from default to Grace: 3t
+```
 
 ---
 

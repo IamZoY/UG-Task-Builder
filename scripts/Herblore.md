@@ -107,18 +107,23 @@ Conditions:
   ├─ Has Item: [Unf Potion]
   ├─ Has Item: [Secondary]
   ├─ NOT Menu Open
-  └─ Idle
+  └─ Idle (Grace: 2t)
 ```
 Combines the unfinished potion with the secondary ingredient.
+
+**Note:** The `Idle (Grace: 2t)` condition waits up to 2 ticks to confirm the player is truly idle before triggering.
 
 ---
 
 ### Task 7: Wait for Animation
 ```
 Type: Wait Animation
+Grace Period: 2 ticks
 Max Ticks: 25
 ```
 Waits for the mixing animation before clicking the menu. This prevents spam-clicking.
+
+**Grace Period:** Waits up to 2 ticks for animation to start before checking. Increase to 3 ticks if the script skips this step.
 
 ---
 
@@ -190,3 +195,4 @@ Clicks "Make All" in the skill menu.
 2. **Pre-buy supplies** - Have enough materials for your session
 3. **Enable Loop** - Toggle loop ON for continuous operation
 4. **Monitor occasionally** - Check for random events or issues
+5. **Animation Issues?** - If the script skips tasks after clicking, increase the Grace Period on the `Idle` condition or `Wait Animation` task (try 3 ticks)
