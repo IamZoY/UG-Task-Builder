@@ -154,6 +154,21 @@ Gem cutting is usually profitable:
 
 ---
 
+## Alternative: Using Wait Animation Cycle
+
+Instead of `Wait Animation` + `Select Menu`, you can use `Wait Animation Cycle` for a cleaner approach:
+
+```
+Task 7: Wait for Cutting to Complete
+├─ Type: Wait Animation Cycle
+├─ Grace Period: 2 ticks
+└─ (Waits for animation to start AND stop - handles the full cycle)
+```
+
+This is useful when you want the script to wait for the entire cutting animation to complete before proceeding.
+
+---
+
 ## Tips
 
 1. **Fast XP** - Gem cutting is one of the fastest Crafting methods
@@ -161,3 +176,4 @@ Gem cutting is usually profitable:
 3. **AFK-friendly** - Long action time per inventory
 4. **Crushed gems** - Low level gems can be crushed (failed cut), higher level = less fails
 5. **Animation Issues?** - If the script skips tasks after clicking, increase the Grace Period on the `Idle` condition or `Wait Animation` task (try 3 ticks)
+6. **Wait Animation Cycle** - Use `Wait Animation Cycle` to wait for the complete crafting animation instead of just checking animation state

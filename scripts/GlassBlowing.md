@@ -186,6 +186,19 @@ This is the meta for Crafting + Magic XP!
 
 ---
 
+## Alternative: Using Wait Animation Cycle
+
+Instead of `Wait Animation` + `Select Menu`, you can use `Wait Animation Cycle`:
+
+```
+Task 7: Wait for Blowing to Complete
+├─ Type: Wait Animation Cycle
+├─ Grace Period: 2 ticks
+└─ (Waits for animation to start AND stop)
+```
+
+---
+
 ## Tips
 
 1. **Unpowered orbs** - Main use is charging for battlestaves
@@ -194,3 +207,4 @@ This is the meta for Crafting + Magic XP!
 4. **Crafting Guild** - Close bank + pottery wheel for making items
 5. **Light orbs** - Best XP at 87 Crafting, also profitable
 6. **Animation Issues?** - If the script skips tasks after clicking, increase the Grace Period on the `Idle` condition or `Wait Animation` task (try 3 ticks)
+7. **Wait Animation Cycle** - Use `Wait Animation Cycle` to wait for the complete animation instead of just checking state

@@ -189,6 +189,19 @@ Clicks "Make All" in the skill menu.
 
 ---
 
+## Alternative: Using Wait Animation Cycle
+
+Instead of `Wait Animation` + `Select Menu`, you can use `Wait Animation Cycle`:
+
+```
+Task 7: Wait for Mixing to Complete
+├─ Type: Wait Animation Cycle
+├─ Grace Period: 2 ticks
+└─ (Waits for animation to start AND stop)
+```
+
+---
+
 ## Tips
 
 1. **Use a close bank** - Grand Exchange or Crafting Guild recommended
@@ -196,3 +209,4 @@ Clicks "Make All" in the skill menu.
 3. **Enable Loop** - Toggle loop ON for continuous operation
 4. **Monitor occasionally** - Check for random events or issues
 5. **Animation Issues?** - If the script skips tasks after clicking, increase the Grace Period on the `Idle` condition or `Wait Animation` task (try 3 ticks)
+6. **Wait Animation Cycle** - Use `Wait Animation Cycle` to wait for the complete mixing animation

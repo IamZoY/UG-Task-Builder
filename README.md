@@ -142,9 +142,28 @@ UG Task Builder allows you to create automated scripts by combining **tasks** in
 | `Wait Ticks` | Pauses for X game ticks (1 tick = 600ms) | Quantity (ticks) |
 | `Wait Animation` | Waits while player is animating | Grace Period (optional) |
 | `Wait Idle` | Waits until player stops animating | Grace Period (optional) |
+| `Wait Animation Start` | Waits for animation to START (use after clicking) | Grace Period |
+| `Wait Animation Cycle` | Waits for full animation cycle (start + stop) | Grace Period |
 | `Walk To` | Walks to coordinates and waits until arrived | X, Y, Z coordinates |
 
 **Grace Period:** How long to wait for animation to start after an action. Prevents false "not animating" detection. Default: 2 ticks.
+
+#### Understanding the Wait Animation Types
+
+| Type | When to Use | What It Does |
+|------|-------------|--------------|
+| `Wait Animation` | Loop until animating | Checks if player IS animating (quick check, loops until true) |
+| `Wait Idle` | Loop until idle | Checks if player is NOT animating (quick check, loops until true) |
+| `Wait Animation Start` | After clicking an action | **Blocks** until animation STARTS within grace period |
+| `Wait Animation Cycle` | After clicking, wait for completion | **Blocks** until animation starts AND stops (full cycle) |
+
+**Example Scenarios:**
+
+1. **Gem Cutting:** Use `Wait Animation Cycle` after "Use Item on Item" to wait for the entire cutting animation to complete before continuing.
+
+2. **Potion Making:** Use `Wait Animation Start` after clicking to ensure the animation has begun, then let the task loop handle the rest.
+
+3. **Checking State:** Use `Wait Animation` or `Wait Idle` as conditions to check current animation state without blocking.
 
 ---
 
@@ -445,6 +464,8 @@ When checking if a player is animating:
 The grace period appears in the task editor for:
 - **Wait Animation** task
 - **Wait Idle** task
+- **Wait Animation Start** task
+- **Wait Animation Cycle** task
 - **Animating** condition (inline)
 - **Idle** condition (inline)
 
@@ -493,6 +514,22 @@ Task: Wait Animation
 ├─ Grace Period: 2
 ├─ Ticks: ✓ (checked)
 └─ Max Ticks: 35
+```
+
+```
+Task: Wait for Crafting to Start
+├─ Type: Wait Animation Start
+├─ Grace Period: 3
+├─ Ticks: ✓ (checked)
+└─ (Blocks until animation starts within 3 ticks)
+```
+
+```
+Task: Wait for Full Crafting Cycle
+├─ Type: Wait Animation Cycle
+├─ Grace Period: 2
+├─ Ticks: ✓ (checked)
+└─ (Waits for animation to start, then waits for it to stop)
 ```
 
 ### Combining Multiple Scripts
