@@ -8,11 +8,16 @@ Scripts for attaching orbs to battlestaves.
 
 These scripts automate attaching charged orbs to battlestaves to create elemental battlestaves.
 
+**How to add one:** click `Presets ▾` on the Task Builder toolbar, open the **Battlestaves** category, and pick **Air**, **Water**, **Earth**, or **Fire**. The preset is added to the side panel as a group (named e.g. "Air Battlestaves"). Open the group to see its tasks. Leave the **Loop** toggle ON (it is on by default) so the list repeats and keeps refilling from the bank, then press **START**. The button turns red and reads **STOP** while running; click it to stop (the preset also stops itself when you run out of materials — see below).
+
 **Requirements:**
 - Be standing at a bank
 - Have battlestaves in your bank
 - Have charged orbs in your bank
-- 54 Crafting (for all types)
+- The Crafting level for the orb type you want (Water 54, Earth 58, Fire 62, Air 66)
+- **Loop** toggle ON (so the list repeats and keeps refilling from the bank)
+
+**Stops automatically when you run out:** if a refill is needed but the bank has no more battlestaves (or no more of the orb), the script ends cleanly on its own instead of looping forever. You'll see it stop after the last batch is banked.
 
 ---
 
@@ -50,7 +55,33 @@ Conditions:
 
 ---
 
-### Task 3: Withdraw Battlestaves
+### Task 3: Stop (out of Battlestaff)
+```
+Type: Stop Script
+Conditions:
+  ├─ Bank Open
+  ├─ NOT Has Item: "Battlestaff"
+  └─ Bank Contains "Battlestaff" < 1
+```
+
+Ends the script cleanly when you've run out of battlestaves in the bank.
+
+---
+
+### Task 4: Stop (out of Orb)
+```
+Type: Stop Script
+Conditions:
+  ├─ Bank Open
+  ├─ NOT Has Item: [Orb]
+  └─ Bank Contains [Orb] < 1
+```
+
+Ends the script cleanly when the bank has no more of the orb.
+
+---
+
+### Task 5: Withdraw Battlestaves
 ```
 Type: Withdraw Item
 Item: "Battlestaff"
@@ -63,7 +94,7 @@ Conditions:
 
 ---
 
-### Task 4: Withdraw Orbs
+### Task 6: Withdraw Orbs
 ```
 Type: Withdraw Item
 Item: [Orb Name]
@@ -77,7 +108,7 @@ Conditions:
 
 ---
 
-### Task 5: Close Bank
+### Task 7: Close Bank
 ```
 Type: Close Bank
 Delay: 1 tick
@@ -89,43 +120,49 @@ Conditions:
 
 ---
 
-### Task 6: Attach Orb to Staff
+### Task 8: Attach Orb (Use Item on Item)
 ```
 Type: Use Item on Item
 Item 1: "Battlestaff"
 Item 2: [Orb]
 Delay: 1 tick
+Expect animation (retry if idle): ON
+  ├─ Idle window: 1800 ms
+  └─ Max retries: 3
 Conditions:
   ├─ Bank Closed
   ├─ Has Item: "Battlestaff"
   ├─ Has Item: [Orb]
   ├─ NOT Menu Open
-  └─ Idle (Grace: 2t)
+  └─ Idle (Grace: 3t)
 ```
 
-**Note:** The `Idle (Grace: 2t)` condition waits up to 2 ticks to confirm the player is truly idle before triggering.
+**Note:** The `Idle (Grace: 3t)` condition means "not animating for 3 ticks", so it won't re-click during the brief one-tick gaps between staves while a batch is being made.
+
+**Idle-retry watchdog:** This step has **Expect animation (retry if idle)** turned on. After it clicks, it watches for the making animation to start. If you idle and nothing happens within the idle window (1800 ms), it re-clicks (up to 3 times), re-checking the conditions first so it never double-makes. This keeps the loop from stalling if a click is missed.
 
 ---
 
-### Task 7: Wait for Animation
+### Task 9: Wait Animation
 ```
 Type: Wait Animation
-Grace Period: 2 ticks
 Max Ticks: 25
 ```
 
-**Grace Period:** Waits up to 2 ticks for animation to start before checking. Increase to 3 ticks if the script skips this step.
+Waits while the making animation plays (up to 25 ticks). Increase the max ticks if your batches take longer.
 
 ---
 
-### Task 8: Select Menu Option
+### Task 10: Select Menu Option
 ```
 Type: Select Menu Option
-Option: 1
+Menu Option: "Make"
 Delay: 1 tick
 Conditions:
   └─ Menu Open
 ```
+
+This clicks the **Make** button on the make/craft menu that pops up after using the orb on the staff.
 
 ---
 
@@ -172,4 +209,4 @@ Buying daily staves and attaching orbs is consistent profit!
 3. **Air = best XP** - But also most expensive orbs
 4. **Water = budget option** - Lower XP but cheaper
 5. **Alch the staves** - For even more profit (and magic XP)
-6. **Animation Issues?** - If the script skips tasks after clicking, increase the Grace Period on the `Idle` condition or `Wait Animation` task (try 3 ticks)
+6. **Animation Issues?** - If the script skips or stalls after clicking, raise the **Max Ticks** on the `Wait Animation` step, or nudge the `Idle` condition grace up by a tick

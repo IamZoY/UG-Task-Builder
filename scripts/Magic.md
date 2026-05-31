@@ -6,23 +6,38 @@ Scripts for magic training at a bank (Plank Make, High Alchemy).
 
 ## Overview
 
-These scripts automate casting magic spells on inventory items for training and profit.
+These scripts automate casting magic spells on inventory items for training and profit. Each one banks for a
+fresh load of items, closes the bank, then casts the spell on every item in your inventory — over and over
+while the **Loop** toggle is ON (it is ON by default).
+
+**Stops when you run out:** if the bank can no longer restock the item you're working on (you have none in your
+inventory and none left in the bank), the script ends itself cleanly with a **Stop Script** task instead of
+spinning forever. When it stops, the **START/STOP** button flips back to green **START**.
 
 **Requirements:**
 - Be standing at a bank
-- Have required runes equipped or in inventory
-- Have target items in your bank
-- Required Magic level
+- Have the required runes equipped or in your inventory
+- Have the target items in your bank
+- Meet the required Magic level
 
 ---
 
-## Available Presets
+## Loading a preset
 
-| Preset | Spell | Target | Level | XP |
-|--------|-------|--------|-------|-----|
+Open the **UG Task Builder** side panel, click **Presets ▾**, open the **Magic** category, and pick one:
+
+| Preset | Spell | Target | Level | XP/cast |
+|--------|-------|--------|-------|---------|
 | Plank Make (Oak) | Plank Make | Oak logs | 86 | 90 |
 | Plank Make (Mahogany) | Plank Make | Mahogany logs | 86 | 90 |
-| High Alch | High Level Alchemy | Any item | 55 | 65 |
+| High Alch | High Level Alchemy | Rune platebody | 55 | 65 |
+
+Picking an item drops a ready-to-run Script group into the side panel. Open the group to view/edit the tasks,
+then press **START**. Leave **Loop** ON so it keeps re-banking automatically; turn **Loop** OFF if you want it
+to run a single inventory and stop.
+
+> **Note on High Alch:** this preset is wired to alch **Rune platebody**. To alch a different item, open the
+> Script and change the item name on the **Withdraw** task and on the **Cast Spell on Item** tasks to match.
 
 ---
 
@@ -53,7 +68,17 @@ Conditions:
   └─ NOT Has Item: [Logs]
 ```
 
-#### Task 3: Withdraw Logs
+#### Task 3: Stop (out of logs)
+```
+Type: Stop Script
+Conditions:
+  ├─ Bank Open
+  ├─ NOT Has Item: [Logs]
+  └─ Bank Contains [Logs] < 1
+```
+*Ends the script cleanly the moment you've used up your logs and the bank can't restock — no infinite re-banking.*
+
+#### Task 4: Withdraw Logs
 ```
 Type: Withdraw Item
 Item: [Log Name]
@@ -64,7 +89,7 @@ Conditions:
   └─ NOT Has Item: [Logs]
 ```
 
-#### Task 4: Close Bank
+#### Task 5: Close Bank
 ```
 Type: Close Bank
 Delay: 1 tick
@@ -73,7 +98,7 @@ Conditions:
   └─ Has Item: [Logs]
 ```
 
-#### Tasks 5-31: Cast Plank Make (x27)
+#### Tasks 6-32: Cast Plank Make (x27)
 ```
 Type: Cast Spell on Item
 Spell: "Plank Make"
@@ -81,12 +106,10 @@ Item: [Logs]
 Delay: 3 ticks
 Conditions:
   ├─ Bank Closed
-  ├─ Has Item: [Logs]
-  └─ Idle (Grace: 2t)
+  └─ Has Item: [Logs]
 ```
-*Repeated 27 times for each log in inventory*
-
-**Note:** The `Idle (Grace: 2t)` condition prevents casting too quickly by waiting for the previous spell's animation to complete.
+*One Cast Spell on Item task per inventory slot — 27 in total. Each one only fires while the bank is closed and
+you still have logs left, so they cast straight down the inventory and then the list loops back to the bank.*
 
 ---
 
@@ -105,7 +128,7 @@ Type: Open Bank
 Delay: 2 ticks
 Conditions:
   ├─ Bank Closed
-  └─ NOT Has Item: [Alch Item]
+  └─ NOT Has Item: Rune platebody
 ```
 
 #### Task 2: Deposit All
@@ -113,43 +136,51 @@ Conditions:
 Type: Deposit All
 Delay: 1 tick
 Conditions:
-  └─ NOT Has Item: [Alch Item]
+  └─ NOT Has Item: Rune platebody
 ```
 
-#### Task 3: Withdraw Items
+#### Task 3: Stop (out of Rune platebody)
+```
+Type: Stop Script
+Conditions:
+  ├─ Bank Open
+  ├─ NOT Has Item: Rune platebody
+  └─ Bank Contains Rune platebody < 1
+```
+*Ends the script cleanly once you've alched your last item and the bank can't restock it.*
+
+#### Task 4: Withdraw Items
 ```
 Type: Withdraw Item
-Item: [Alch Item Name]
+Item: Rune platebody
 Quantity: 27
 Delay: 2 ticks
 Conditions:
   ├─ Bank Open
-  └─ NOT Has Item: [Alch Item]
+  └─ NOT Has Item: Rune platebody
 ```
 
-#### Task 4: Close Bank
+#### Task 5: Close Bank
 ```
 Type: Close Bank
 Delay: 1 tick
 Conditions:
   ├─ Bank Open
-  └─ Has Item: [Alch Item]
+  └─ Has Item: Rune platebody
 ```
 
-#### Tasks 5-31: Cast High Alchemy (x27)
+#### Tasks 6-32: Cast High Alchemy (x27)
 ```
 Type: Cast Spell on Item
 Spell: "High Level Alchemy"
-Item: [Alch Item]
+Item: Rune platebody
 Delay: 5 ticks
 Conditions:
   ├─ Bank Closed
-  ├─ Has Item: [Alch Item]
-  └─ Idle (Grace: 2t)
+  └─ Has Item: Rune platebody
 ```
-*Repeated 27 times for each item*
-
-**Note:** The `Idle (Grace: 2t)` condition prevents casting too quickly by waiting for the previous spell's animation to complete.
+*One Cast Spell on Item task per inventory slot — 27 in total. Change the item name here (and on the Withdraw
+task) if you want to alch something other than Rune platebody.*
 
 ---
 
@@ -196,6 +227,7 @@ Common profitable items:
 4. **Buy limits** - Can only buy 70 of most items per 4 hours
 5. **Alch value lookup** - Use wiki or GE to find profitable items
 
-### Animation Grace Period
-- **Animation Issues?** - If the script casts spells too quickly or skips casts, add an `Idle (Grace: 2t)` condition to spell casting tasks
-- **Increase if needed** - Try 3 ticks if spells are still being skipped
+### Casting pace
+The delay on each cast task (3 ticks for Plank Make, 5 ticks for High Alch) is what spaces the casts out so
+they don't fire on top of each other. If casts ever feel rushed or get skipped, open the cast tasks and bump
+their **Delay** up by a tick.
