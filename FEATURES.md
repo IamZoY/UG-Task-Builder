@@ -70,7 +70,11 @@ animation) and flip your overhead prayer immediately — they never wait for tas
 ## 2. The task editor — common fields
 
 Double-click a task (or click **+** to add one) to open the editor. The fields that appear depend on
-the **Task Type** you pick; these are the common ones:
+the **Task Type** you pick; these are the common ones.
+
+> Container tasks behave differently: double-clicking a **condition block** (📋) or group opens its
+> **sub-task list** instead of the editor. To edit the block's own settings (its test, coordinates,
+> radius, …), use the ✏ **Edit** button on its card.
 
 | Field (on screen) | What it does |
 |-------------------|--------------|
@@ -278,6 +282,15 @@ bank is closed.
 - **Spell/Item name**, and an **Action** for the item (default tries Rub/Break/Teleport).
 - Example: `Type: Teleport, Spell/Item name: Varrock teleport`.
 
+**Step To Tile** — one single walk click on an exact tile, with no pathing and no "am I there yet"
+loop. This is the dodge primitive: sidestep an AoE, then get back to attacking.
+- **Coordinates (X / Y / Z)** — the tile, or offsets when **Mode** is `relative`.
+- **Mode (blank/relative)** — `relative` makes X/Y offsets from your current tile (negative = west/south),
+  which also works inside boss instances. Example: `Mode: relative, X: 2, Y: 0` steps 2 tiles east.
+
+**Toggle Run** — flips run via the minimap orb.
+- **on / off (blank=toggle)** — `on`/`off` ensure that state; blank just toggles.
+
 ### Menu operations
 
 **Select Menu Option** — clicks an option in the make/skill menu (the "what would you like to make?"
@@ -285,6 +298,14 @@ popup).
 - **Option Name** = "Make" or an option number (default = the first make button). Fires only while the
   menu is open.
 - Example: `Type: Select Menu Option, Option Name: Make`.
+
+### Dialog operations
+
+**Dialog Continue** — clicks "Click here to continue" whenever a dialog with continue-text is up.
+Fires only while such a dialog is open. No fields.
+
+**Dialog Select Option** — picks a dialog option by its text. Fires only while an option menu is up.
+- **Option text** — e.g. `Yes.` or a number like `2`.
 
 ### Custom
 
@@ -314,6 +335,16 @@ popup).
 - **Min spec %** (default 50).
 - Example: `Type: Special Attack, Min spec %: 50`.
 
+**Gear Swap** — equips a whole comma-list of items in one game tick, skipping pieces you already
+wear. This is the PvM switch primitive (mage set ↔ range set, spec weapon in/out).
+- **Gear list (comma)**, **Click type**.
+- Example: `Type: Gear Swap, Gear list (comma): Toxic blowpipe, Ava's assembler, Black d'hide body`.
+
+**Combo Eat** — consumes every present item from a comma-list back-to-back in one tick — the classic
+food + karambwan (+ brew/restore) combo.
+- **Consume list (comma)**, **Click type**.
+- Example: `Type: Combo Eat, Consume list (comma): Manta ray, Cooked karambwan`.
+
 > Note: there are also three simple **If Has Item / If Bank Open / If Animating** tasks in the dropdown,
 > but they **do not gate the tasks after them** — they're left over from older scripts. To make steps
 > conditional, use a **condition block** (§6) or attach **inline conditions** to a task (§7).
@@ -325,6 +356,14 @@ popup).
 A **condition block** is a container task whose name starts with the 📋 clipboard icon. The tasks you
 drop **inside** it only run when the block's test is **true**; otherwise the whole group is skipped.
 Tick **Invert Condition (NOT)** to flip the test. Blocks can be nested.
+
+**Viewing the tasks inside a block.** A container's card shows **▸ name (count)** with the number of
+sub-tasks it holds. Double-click the card (or click its 📁 **Open** button) to open the sub-task list —
+you can add, edit, reorder and delete sub-tasks there just like at the top level, and the **back arrow**
+returns you up a level. While the script is running, the green highlight follows execution everywhere:
+the container card glows while anything inside it runs, and inside the block view the exact running
+sub-task glows. The ✏ **Edit** button on the card edits the block's own settings (double-click is
+reserved for opening it).
 
 ### Simple (yes/no) blocks
 
@@ -346,6 +385,10 @@ Tick **Invert Condition (NOT)** to flip the test. Blocks can be nested.
 | 📋 Condition: In Combat | you are in combat / interacting | — |
 | 📋 Condition: Item Equipped | any of the listed items is worn | Item(s) (comma) |
 | 📋 Condition: Ground Item | a matching ground item is present | Ground item(s), Max Distance |
+| 📋 Condition: Target Name | the NPC you're fighting matches a name | Target name(s) (comma) |
+| 📋 Condition: NPC Attacking Me | a matching NPC is attacking **you** (blank name = any) | NPC Name/ID, Max Distance (0 = any) |
+| 📋 Condition: Dialog Open | a dialog is up (optionally: a specific option exists) | Option text (optional) |
+| 📋 Condition: Widget Visible | an interface element is on screen | Widget group:child |
 
 ### Numeric blocks (use the comparator + threshold — see §8)
 
@@ -358,6 +401,9 @@ Tick **Invert Condition (NOT)** to flip the test. Blocks can be nested.
 | 📋 Condition: Skill Level | a skill's level (boosted or real) | Comparator, Threshold, Skill name, Boosted |
 | 📋 Condition: Bank Contains | how many of an item the bank holds (bank must be open) | Comparator, Min Count, Item Name |
 | 📋 Condition: Var Compare | one of your variables (§9) | Comparator, Value, Variable name |
+| 📋 Condition: Target HP | your current target's HP — tick **%** for percent of its healthbar (needs a visible healthbar) | Comparator, Threshold, % |
+| 📋 Condition: Varbit | a game varbit's value (quest stages, boss phases, cooldowns…) | Varbit ID, Comparator, Threshold |
+| 📋 Condition: VarPlayer | a game varplayer's value (e.g. auto-retaliate) | VarPlayer ID, Comparator, Threshold |
 
 ### Location block
 
@@ -529,7 +575,34 @@ The side panel has a **Loop** toggle (on by default). It controls what happens a
 **Example:** a banking/crafting script you want running forever → **Loop ON**. A one-time setup
 (withdraw gear, walk somewhere, equip) → **Loop OFF**.
 
----
+The panel shows the short version right next to the toggle — **"Loop — ON: repeat · OFF: run once"** —
+and hovering it shows the full explanation.
+
+### Trigger hotkeys (Loop OFF)
+
+When **Loop is OFF**, you can bind a keyboard hotkey that **runs a script once** on demand — turning a
+script into a one-press macro (a gear-swap, a spec rotation, a "bank now" sequence). Pressing the key
+**triggers a run**; it does **not** turn the script on or off.
+
+How to set one:
+- The hotkey option only appears with **Loop OFF** (with Loop ON the list already repeats, so there's
+  nothing to trigger).
+- On the script card, tick the **Hotkey** checkbox — a capture button appears next to it.
+- Click the button, press your key (or combo). It saves instantly. Un-tick the checkbox (or left-click
+  the button) to clear it.
+
+Rules and behavior:
+- **Any key works** — it's captured at the game window and **blocked from the game while it's bound**,
+  so it won't type in chat. Because of that, avoid binding a key you still need to play (a letter you
+  type, your run/prayer key, etc.); an F-key or a Ctrl/Alt combo is usually safest.
+- Pressing the key runs the script's task list once. If the script isn't started yet it starts it;
+  if it's already started and idle, it re-runs the list. The status line confirms (e.g. "Hotkey: ran
+  Spec dump"). Press **STOP** to stop as usual.
+- The key only intercepts input while **Loop is OFF**; switch Loop ON and the key is released back to
+  the game.
+- Holding the key fires once, not repeatedly.
+- Hotkeys are per-setup: **Export keeps them, Import clears them** (rebind after importing so two
+  scripts never share one key). Bind each key to only one script.
 
 ## 12. Presets
 

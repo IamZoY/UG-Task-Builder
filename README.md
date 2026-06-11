@@ -120,7 +120,7 @@ Things worth remembering:
 | **+** | Create a new empty script. |
 | **Presets ▾** | Choose from ready-made script templates (now includes a **Boss** category). |
 | **Import** | Load a script from a JSON file. |
-| **Loop** toggle | On its own row. When ON, the task list repeats once it finishes; when OFF, the list runs once then idles until you press STOP. |
+| **Loop** toggle | One row with its explanation ("Loop — ON: repeat · OFF: run once"). When ON, the task list repeats once it finishes; when OFF, the list runs once then idles until you press STOP. |
 
 ### Per-Script Controls
 
@@ -130,6 +130,7 @@ Things worth remembering:
 | **Edit** | Open the task editor. |
 | **Export** | Save the script as a JSON file. |
 | **Delete** | Remove the script (asks for confirmation). |
+| **Hotkey** | With **Loop OFF**, tick this to bind a key that **runs the script once** in-game (it does not toggle it). Any key works and is blocked from the game while bound, so avoid keys you need to play. Un-tick to clear. |
 
 ### Task Editor
 
